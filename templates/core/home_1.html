@@ -1,0 +1,25 @@
+<!DOCKTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+	hii
+	<script>
+			setInterval(timer,10000);
+			function timer(){
+				$.ajax({
+				type:'POST',	
+				url:'{% url "home" %}',
+				data:{
+					'csrfmiddlewaretoken':'{{ csrf_token }}',
+					'action':"add_points",
+				},
+				success: function (status){
+					console.log(status);
+				},
+			})
+		}
+	</script>
+</body>
+</html>
