@@ -20,7 +20,7 @@ def confluence_api(request):
             # ('limit', '10'),
             # ('expand', 'page'),
         )
-        response = requests.get('https://paras112.atlassian.net/wiki/rest/api/content', params=params, auth=('lakparas@gmail.com', 'GwXoc5s7lu6VRpZIGZB72DE3'))
+        response = requests.get('https://paras112.atlassian.net/wiki/rest/api/content', params=params, auth=('xxx@gmail.com', 'xxxx'))
         res=response.json()
         ## length of json data
         l=len(res['results'])
@@ -30,14 +30,19 @@ def confluence_api(request):
         field_name = 'data'
         obj = ConfluenceData.objects.first()
         length_confluence_data = getattr(obj, field_name)
-        print(res['results'][l-1])
+        # print(res['results'][l-1])
         #compare the lenth of json from database to the new length of json which is fetch from api
         #if length of fetch json from api  is greater than save length then we call zulip api
-
+        # for i in range(l):
+        # print(length_confluence_data)
+        # print(res['results'][19])
+        print(res['results'][l-1]['title'])
         if(l>length_confluence_data):
             test1_json=(res['results'][l-1]['_links']['webui'])
+            title=res['results'][l-1]['title']
+
             get_spaces_and_pages=spacepage(test1_json)
-            format_page_and_string="New {} is created".format(get_spaces_and_pages)
+            format_page_and_string="New {} is created with title {}".format(get_spaces_and_pages,title)
             client = zulip.Client(config_file="/home/paras/Downloads/zuliprc")
             request = {
             "type": "stream",
@@ -46,6 +51,10 @@ def confluence_api(request):
             "content": format_page_and_string
             }
             result = client.send_message(request)
+            t = ConfluenceData.objects.get(id=1)
+            t.data =l # change field
+            t.save()
+        elif(l<length_confluence_data):
             t = ConfluenceData.objects.get(id=1)
             t.data =l # change field
             t.save()
